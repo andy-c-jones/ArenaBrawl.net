@@ -30,12 +30,8 @@ steps:
 
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'pack'
-    packagesToPack: '**/*.csproj'
-    versioningScheme: 'byPrereleaseNumber'
-    majorVersion: '1'
-    minorVersion: '0'
-    patchVersion: '0'
+    command: 'publish'
+    publishWebProjects: true
 
 - task: AzureRmWebAppDeployment@4
   inputs:
