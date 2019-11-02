@@ -10,6 +10,14 @@ a, .btn-link {
     color: #33211e;
 }
 
+.title {
+    font-size: 5em;
+    line-height: .8;
+    letter-spacing: -4px;
+    margin-bottom: 32px;
+    font-weight: 700;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #33211e;
