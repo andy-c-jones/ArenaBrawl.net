@@ -1,0 +1,16 @@
+﻿@page "/"
+@using ArenaBrawl.Services
+@inject MatchmakingService MatchmakingService
+
+<input type="text" placeholder="Please enter your name" value="@_name" />
+<button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+
+@code {
+    private string _name;
+    private readonly Guid _id = Guid.NewGuid();
+
+    async void QueueForMatch()
+    {
+        await MatchmakingService.AddToQueue(_id, _name);
+    }
+}
