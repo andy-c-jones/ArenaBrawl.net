@@ -5,26 +5,72 @@
 <h1 class="text-center title">Arena Brawl</h1>
 
 <div class="text-center">
-    @if (_isFindingPlayer)
+    @switch (_state)
     {
-        <div class="">Loading...</div>
+        case GameState.OutsideOfGame:
+            <div>
+                <input class="input-txt" type="text" placeholder="PlayerName#1234" @bind="_id"/>
+                       <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+                               </div>
+            break;
+        case GameState.FindingPlayer:
+            <div class="">Finding player please wait...</div>
+            break;
+        case GameState.PlayerFound:
+            <div class="">Player found: @_opponentsName</div>
+            break;
     }
-    else
-    {
-        <input class="input-txt" type="text" placeholder="PlayerName#1234" value="@_id"/>
-        <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
-    }
-                </div>
+                               <div>Games in progress: @_gamesInProgress</div>
+                               <div>Players in queue: @_playersInQueue</div>
+                               </div>
 
 
-                @code {
-                    private string _id;
-                    public bool _isFindingPlayer;
+                               @code {
 
-                    async void QueueForMatch()
-                    {
-                        await MatchmakingService.AddToQueue(_id);
-                        _isFindingPlayer = true;
-                    }
+                                   enum GameState
+                                   {
+                                       OutsideOfGame,
+                                       FindingPlayer,
+                                       PlayerFound
+                                   }
 
-                }
+                                   private string _id;
+                                   private int _gamesInProgress;
+                                   private int _playersInQueue;
+                                   private GameState _state = GameState.OutsideOfGame;
+                                   private string _opponentsName = "";
+
+                                   async void QueueForMatch()
+                                   {
+                                       await MatchmakingService.AddToQueue(_id);
+                                       _state = GameState.FindingPlayer;
+                                       PollForUpdates();
+                                   }
+
+                                   private async void PollForUpdates()
+                                   {
+                                       while (_state == GameState.FindingPlayer)
+                                       {
+                                           try
+                                           {
+                                               _gamesInProgress = MatchmakingService.GamesInProgress();
+                                               _playersInQueue = MatchmakingService.AmountOfPlayersInQueue();
+                                               var (matchFound, opponentsName) = await MatchmakingService.AttemptToFindMatch(_id);
+                                               if (matchFound)
+                                               {
+                                                   _state = GameState.PlayerFound;
+                                                   _opponentsName = opponentsName;
+                                               }
+                                               else
+                                               {
+                                                   await Task.Delay(2000);
+                                               }
+                                           }
+                                           catch (Exception e)
+                                           {
+                                               Console.Error.WriteLine(e);
+                                           }
+                                       }
+                                   }
+
+                               }
