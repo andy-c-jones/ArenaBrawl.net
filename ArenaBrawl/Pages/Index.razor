@@ -2,15 +2,29 @@
 @using ArenaBrawl.Services
 @inject MatchmakingService MatchmakingService
 
-<input type="text" placeholder="Please enter your name" value="@_name" />
-<button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+<h1 class="text-center" style="padding-bottom: 20px">Arena Brawl</h1>
 
-@code {
-    private string _name;
-    private readonly Guid _id = Guid.NewGuid();
-
-    async void QueueForMatch()
+<div class="text-center">
+    @if (_isFindingPlayer)
     {
-        await MatchmakingService.AddToQueue(_id, _name);
+        <div class="">Loading...</div>
     }
-}
+    else
+    {
+        <input type="text" placeholder="PlayerName#1234" value="@_id"/>
+        <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+    }
+                </div>
+
+
+                @code {
+                    private string _id;
+                    public bool _isFindingPlayer;
+
+                    async void QueueForMatch()
+                    {
+                        await MatchmakingService.AddToQueue(_id);
+                        _isFindingPlayer = true;
+                    }
+
+                }
