@@ -1,0 +1,55 @@
+﻿@using ArenaBrawl.InMemoryData
+@using ArenaBrawl.InMemoryData.Matchmaking
+@inject MatchmatchingQueue Queue
+@inject PlayerSession Session
+
+
+@switch (_state)
+{
+    case GameState.OutsideOfGame:
+        <div>
+            <input class="input-txt" type="text" placeholder="PlayerName#1234" @bind="_name" />
+            <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+         </div>
+        break;
+    case GameState.FindingPlayer:
+        <h3>Finding player please wait...</h3>
+        break;
+    case GameState.PlayerFound:
+        <div class="">Player found! Please start a game with @_opponent.InGameName</div>
+        break;
+}
+
+@code {
+
+    enum GameState
+    {
+        OutsideOfGame,
+        FindingPlayer,
+        PlayerFound
+    }
+
+    private GameState _state = GameState.OutsideOfGame;
+    private string _name;
+    private PlayerWaitingForGame _playerWaitingForGame;
+    private PlayerWaitingForGame _opponent;
+
+    private async void QueueForMatch()
+    {
+        Queue.MatchFound += QueueOnMatchFound;
+        _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
+        await Queue.Add(_playerWaitingForGame);
+        _state = GameState.FindingPlayer;
+    }
+
+    private void QueueOnMatchFound(IList<PlayerWaitingForGame> match)
+    {
+        if(!match.Contains(_playerWaitingForGame)) return;
+
+        _opponent = match.First(p => p.Id != Session.Id);
+        _state = GameState.PlayerFound;
+        Queue.MatchFound -= QueueOnMatchFound;
+        InvokeAsync(StateHasChanged);
+    }
+
+}

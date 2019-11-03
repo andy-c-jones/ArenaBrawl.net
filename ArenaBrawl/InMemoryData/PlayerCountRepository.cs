@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ArenaBrawl.Data
+namespace ArenaBrawl.InMemoryData
 {
     public class PlayerCountRepository
     {

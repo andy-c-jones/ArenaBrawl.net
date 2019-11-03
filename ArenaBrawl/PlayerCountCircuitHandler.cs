@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using ArenaBrawl.Data;
+using ArenaBrawl.InMemoryData;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 
 namespace ArenaBrawl.Services
@@ -8,7 +9,7 @@ namespace ArenaBrawl.Services
     public class PlayerCountCircuitHandler : CircuitHandler
     {
         private readonly PlayerCountRepository _repository;
-        private bool playerOnline;
+        private bool _playerOnline;
 
         public PlayerCountCircuitHandler(PlayerCountRepository repository)
         {
@@ -17,16 +18,16 @@ namespace ArenaBrawl.Services
 
         public override Task OnConnectionDownAsync(Circuit circuit, CancellationToken cancellationToken)
         {
-            if (!playerOnline) return base.OnConnectionDownAsync(circuit, cancellationToken);
+            if (!_playerOnline) return base.OnConnectionDownAsync(circuit, cancellationToken);
             
             _repository.PlayerDisconnected();
-            playerOnline = false;
+            _playerOnline = false;
             return base.OnConnectionDownAsync(circuit, cancellationToken);
         }
 
         public override Task OnConnectionUpAsync(Circuit circuit, CancellationToken cancellationToken)
         {
-            playerOnline = true;
+            _playerOnline = true;
             _repository.PlayerConnected();
             return base.OnConnectionUpAsync(circuit, cancellationToken);
         }

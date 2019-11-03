@@ -1,5 +1,7 @@
 using ArenaBrawl.Areas.Identity;
 using ArenaBrawl.Data;
+using ArenaBrawl.InMemoryData;
+using ArenaBrawl.InMemoryData.Matchmaking;
 using ArenaBrawl.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -36,9 +38,9 @@ namespace ArenaBrawl
             services
                 .AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>
                 >();
-            services.AddSingleton<WeatherForecastService>();
-            services.AddSingleton<MatchmakingService>();
+            services.AddSingleton<MatchmatchingQueue>();
             services.AddSingleton<PlayerCountRepository>();
+            services.AddScoped<PlayerSession>();
             services.AddScoped<CircuitHandler, PlayerCountCircuitHandler>();
         }
 
