@@ -43,8 +43,17 @@ steps:
   inputs:
     command: 'custom'
     custom: 'ef'
-    arguments: 'migrations script -o migration.sql --idempotent'
+    arguments: 'migrations script -o --idempotent'
     workingDirectory: '$(System.DefaultWorkingDirectory)/ArenaBrawl'
+
+- task: SqlAzureDacpacDeployment@1
+  inputs:
+    azureSubscription: 'Visual Studio Professional with MSDN(48921dc3-b5bc-4bdd-8a68-f09da744c789)'
+    AuthenticationType: 'connectionString'
+    ConnectionString: '$(dbconnectionstring)'
+    deployType: 'SqlTask'
+    SqlFile: '$(System.DefaultWorkingDirectory)/ArenaBrawl/migration.sql'
+    IpDetectionMethod: 'AutoDetect' 
 
 - task: AzureRmWebAppDeployment@4
   inputs:
