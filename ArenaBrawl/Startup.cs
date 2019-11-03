@@ -3,6 +3,7 @@ using ArenaBrawl.Data;
 using ArenaBrawl.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,8 @@ namespace ArenaBrawl
                 >();
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<MatchmakingService>();
+            services.AddSingleton<PlayerCountRepository>();
+            services.AddScoped<CircuitHandler, PlayerCountCircuitHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

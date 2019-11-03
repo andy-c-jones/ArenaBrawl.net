@@ -1,0 +1,21 @@
+﻿@using ArenaBrawl.Data
+@inject PlayerCountRepository OnlinePlayers
+
+<div>Players Online: @_count</div>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        OnlinePlayers.CountUpdated += OnlinePlayersOnCountUpdated();
+        _count = OnlinePlayers.CurrentPlayers();
+    }
+
+    private Action<int> OnlinePlayersOnCountUpdated() => current =>
+    {
+        _count = current;
+        InvokeAsync(StateHasChanged);
+    };
+
+    private int _count;
+}

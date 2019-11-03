@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using ArenaBrawl.Services
-@inject MatchmakingService MatchmakingService
+@using ArenaBrawl.Components
+
+@inject MatchmakingService Matchmaking
 
 <h1 class="text-center title">Arena Brawl</h1>
 
@@ -20,57 +22,52 @@
             <div class="">Player found: @_opponentsName</div>
             break;
     }
-                               <div>Games in progress: @_gamesInProgress</div>
-                               <div>Players in queue: @_playersInQueue</div>
-                               </div>
+    <OnlinePlayerCount></OnlinePlayerCount>
+</div>
 
 
-                               @code {
+@code {
 
-                                   enum GameState
-                                   {
-                                       OutsideOfGame,
-                                       FindingPlayer,
-                                       PlayerFound
-                                   }
+    enum GameState
+    {
+        OutsideOfGame,
+        FindingPlayer,
+        PlayerFound
+    }
 
-                                   private string _id;
-                                   private int _gamesInProgress;
-                                   private int _playersInQueue;
-                                   private GameState _state = GameState.OutsideOfGame;
-                                   private string _opponentsName = "";
+    private string _id;
+    private GameState _state = GameState.OutsideOfGame;
+    private string _opponentsName = "";
 
-                                   async void QueueForMatch()
-                                   {
-                                       await MatchmakingService.AddToQueue(_id);
-                                       _state = GameState.FindingPlayer;
-                                       PollForUpdates();
-                                   }
+    async void QueueForMatch()
+    {
+        await Matchmaking.AddToQueue(_id);
+        _state = GameState.FindingPlayer;
+        PollForUpdates();
+    }
 
-                                   private async void PollForUpdates()
-                                   {
-                                       while (_state == GameState.FindingPlayer)
-                                       {
-                                           try
-                                           {
-                                               _gamesInProgress = MatchmakingService.GamesInProgress();
-                                               _playersInQueue = MatchmakingService.AmountOfPlayersInQueue();
-                                               var (matchFound, opponentsName) = await MatchmakingService.AttemptToFindMatch(_id);
-                                               if (matchFound)
-                                               {
-                                                   _state = GameState.PlayerFound;
-                                                   _opponentsName = opponentsName;
-                                               }
-                                               else
-                                               {
-                                                   await Task.Delay(2000);
-                                               }
-                                           }
-                                           catch (Exception e)
-                                           {
-                                               Console.Error.WriteLine(e);
-                                           }
-                                       }
-                                   }
+    private async void PollForUpdates()
+    {
+        while (_state == GameState.FindingPlayer)
+        {
+            try
+            {
+                var (matchFound, opponentsName) = await Matchmaking.AttemptToFindMatch(_id);
+                if (matchFound)
+                {
+                    _state = GameState.PlayerFound;
+                    _opponentsName = opponentsName;
+                }
+                else
+                {
+                    await Task.Delay(2000);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e);
+            }
+        }
+    }
 
-                               }
+}
