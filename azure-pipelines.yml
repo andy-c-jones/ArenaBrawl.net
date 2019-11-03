@@ -43,7 +43,7 @@ steps:
   inputs:
     command: 'custom'
     custom: 'ef'
-    arguments: 'migrations script -o --idempotent'
+    arguments: 'migrations script -o migration.sql --idempotent'
     workingDirectory: '$(System.DefaultWorkingDirectory)/ArenaBrawl'
 
 - task: SqlAzureDacpacDeployment@1
