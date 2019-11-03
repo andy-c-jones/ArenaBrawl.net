@@ -36,14 +36,14 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'custom'
-    custom: 'tool install dotnet-ef'
-    arguments: '--global'
+    custom: ''
+    arguments: 'tool install dotnet-ef --global'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'custom'
-    custom: 'ef migrations script'
-    arguments: '-o migration.sql --idempotent'
+    custom: ''
+    arguments: 'ef migrations script -o migration.sql --idempotent'
     workingDirectory: '$(System.DefaultWorkingDirectory)/ArenaBrawl'
 
 - task: AzureRmWebAppDeployment@4
