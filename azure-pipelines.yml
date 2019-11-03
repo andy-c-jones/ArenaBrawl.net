@@ -52,4 +52,4 @@ steps:
     azureSubscription: 'Visual Studio Professional with MSDN(48921dc3-b5bc-4bdd-8a68-f09da744c789)'
     appType: 'webApp'
     WebAppName: 'arenabrawl'
-    packageForLinux: '/**/*.zip'
+    packageForLinux: '**/*.zip'
