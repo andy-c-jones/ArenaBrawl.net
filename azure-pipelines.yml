@@ -33,10 +33,23 @@ steps:
     command: 'publish'
     publishWebProjects: true
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'custom'
+    custom: 'tool install dotnet-ef'
+    arguments: '--global'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'custom'
+    custom: 'ef migrations script'
+    arguments: '-o migration.sql --idempotent'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/ArenaBrawl'
+
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
     azureSubscription: 'Visual Studio Professional with MSDN(48921dc3-b5bc-4bdd-8a68-f09da744c789)'
     appType: 'webApp'
     WebAppName: 'arenabrawl'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    packageForLinux: '/**/*.zip'
