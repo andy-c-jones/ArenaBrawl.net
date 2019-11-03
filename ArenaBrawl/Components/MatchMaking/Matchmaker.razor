@@ -1,4 +1,5 @@
-﻿@using ArenaBrawl.InMemoryData
+﻿@using System.Text.RegularExpressions
+@using ArenaBrawl.InMemoryData
 @using ArenaBrawl.InMemoryData.Matchmaking
 @inject MatchmatchingQueue Queue
 @inject PlayerSession Session
@@ -7,16 +8,29 @@
 @switch (_state)
 {
     case GameState.OutsideOfGame:
-        <div>
-            <input class="input-txt" type="text" placeholder="PlayerName#1234" @bind="_name" />
-            <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
-         </div>
+    <div>
+         <p>To find a game of MTG:A Brawl please enter your name and queue up for a match.</p>
+         <p>The system will pair you up with another player when one becomes available.</p>
+         <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
+         <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+         @if(_showInvalidNameWarning)
+         {
+           <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
+         }
+    </div>
         break;
     case GameState.FindingPlayer:
         <h3>Finding player please wait...</h3>
         break;
     case GameState.PlayerFound:
-        <div class="">Player found! Please start a game with @_opponent.InGameName</div>
+        <div class="">
+            <p>Player found!</p>
+            <p>Please start a game with @_opponent.InGameName</p>
+            <p>Challenge Match</p>
+            <p>Deck Type: Brawl</p>
+            <p>Best of One</p>
+            <p>Coin Flip</p>
+        </div>
         break;
 }
 
@@ -31,16 +45,30 @@
 
     private GameState _state = GameState.OutsideOfGame;
     private string _name;
+    private bool _showInvalidNameWarning;
     private PlayerWaitingForGame _playerWaitingForGame;
     private PlayerWaitingForGame _opponent;
+    private readonly Regex nameValidationRegex = new Regex(@"\w+#\d\d\d\d\d", RegexOptions.Compiled);
 
     private async void QueueForMatch()
     {
-        Queue.MatchFound += QueueOnMatchFound;
-        _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
-        await Queue.Add(_playerWaitingForGame);
-        _state = GameState.FindingPlayer;
+        if (NameIsValid())
+        {
+            _showInvalidNameWarning = false;
+            Queue.MatchFound += QueueOnMatchFound;
+            _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
+            await Queue.Add(_playerWaitingForGame);
+            _state = GameState.FindingPlayer;
+        }
+        else
+        {
+            _showInvalidNameWarning = true;
+            InvokeAsync(StateHasChanged);
+        }
     }
+
+
+    private bool NameIsValid() => nameValidationRegex.IsMatch(_name);
 
     private void QueueOnMatchFound(IList<PlayerWaitingForGame> match)
     {

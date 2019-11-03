@@ -1,21 +1,43 @@
 ﻿@using ArenaBrawl.InMemoryData
 @inject PlayerCountRepository OnlinePlayers
 
-<div>Players Online: @_count</div>
+<style type="text/css">
+.playercount-led-green {
+     margin: 0 auto;
+     width: 12px;
+     height: 12px;
+     background-color: #ABFF00;
+     border-radius: 50%;
+     box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #304701 0 -1px 9px, #89FF00 0 2px 12px;
+     display: inline-block;
+ }
 
-@code {
-
-    protected override void OnInitialized()
-    {
-        OnlinePlayers.CountUpdated += OnlinePlayersOnCountUpdated();
-        _count = OnlinePlayers.CurrentPlayers();
-    }
-
-    private Action<int> OnlinePlayersOnCountUpdated() => current =>
-    {
-        _count = current;
-        InvokeAsync(StateHasChanged);
-    };
-
-    private int _count;
+.playercount-text {
+    display: inline-block;
 }
+
+</style>
+
+<div>
+  <div class="playercount-led-green"></div>
+  <div class="playercount-text">@_count @PlayersText() online</div>
+</div>
+
+    @code {
+
+        protected override void OnInitialized()
+        {
+            OnlinePlayers.CountUpdated += OnlinePlayersOnCountUpdated();
+            _count = OnlinePlayers.CurrentPlayers();
+        }
+
+        private Action<int> OnlinePlayersOnCountUpdated() => current =>
+        {
+            _count = current;
+            InvokeAsync(StateHasChanged);
+        };
+
+        private int _count;
+
+        private string PlayersText() => _count == 1 ? "player" : "players";
+    }

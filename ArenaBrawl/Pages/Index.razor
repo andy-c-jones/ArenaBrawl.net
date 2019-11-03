@@ -1,16 +1,24 @@
 ﻿@page "/"
 @using ArenaBrawl.Components
 @using ArenaBrawl.Components.MatchMaking
+<style type="text/css">footer {
+     bottom: 0;
+     margin-top: 50px;
+ }</style>
 
 <h1 class="text-center title">Arena Brawl</h1>
 
 <div class="text-center">
     <Matchmaker></Matchmaker>
-    <OnlinePlayerCount></OnlinePlayerCount>
 </div>
 
+<footer class="index-page-footer">
+    <div class="text-center">
+        <div>
+            <OnlinePlayerCount></OnlinePlayerCount>
+        </div>
+    </div>
+</footer>
 
 @code {
-
-
 }
