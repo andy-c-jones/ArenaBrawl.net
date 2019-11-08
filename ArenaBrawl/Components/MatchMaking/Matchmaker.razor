@@ -3,24 +3,54 @@
 @using ArenaBrawl.InMemoryData.Matchmaking
 @inject MatchmatchingQueue Queue
 @inject PlayerSession Session
+<style type="text/css">
 
+    .lds-dual-ring {
+        display: inline-block;
+        width: 64px;
+        height: 64px;
+    }
+
+        .lds-dual-ring:after {
+            content: " ";
+            display: block;
+            width: 46px;
+            height: 46px;
+            margin: 1px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            border-color: #fff transparent #fff transparent;
+            animation: lds-dual-ring 1.2s linear infinite;
+        }
+
+    @@keyframes lds-dual-ring {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 
 @switch (_state)
 {
     case GameState.OutsideOfGame:
-    <div>
-         <p>To find a game of MTG:A Brawl please enter your name and queue up for a match.</p>
-         <p>The system will pair you up with another player when one becomes available.</p>
-         <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
-         <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
-         @if(_showInvalidNameWarning)
-         {
-           <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
-         }
-    </div>
+        <div>
+            <p>To find a game of MTG:A Brawl please enter your name and queue up for a match.</p>
+            <p>The system will pair you up with another player when one becomes available.</p>
+            <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
+            <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+            @if (_showInvalidNameWarning)
+            {
+                <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
+            }
+        </div>
         break;
     case GameState.FindingPlayer:
-        <h3>Finding player please wait...</h3>
+        <div class="lds-dual-ring"></div>
+        <p>Finding player please wait...</p>
         break;
     case GameState.PlayerFound:
         <div class="">
@@ -31,8 +61,9 @@
         </div>
         break;
     case GameState.Accepted:
-       <p>Waiting...</p>
-    break;
+        <div class="lds-dual-ring"></div>
+        <p>Waiting for the other player...</p>
+        break;
     case GameState.BothAccepted:
         <div class="">
             <p>Please start a game with @_opponent.InGameName</p>
@@ -42,96 +73,96 @@
             <p>Coin Flip</p>
             <button class="btn btn-primary" @onclick="Cancel">Finished</button>
         </div>
-                break;
-            case GameState.Rejected:
-            <p>The other player has rejected the match up</p>
-                <button class="btn btn-primary" @onclick="QueueForMatch">Requeue</button>
-                <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
-            break;
+        break;
+    case GameState.Rejected:
+        <p>The other player has rejected the match up</p>
+        <button class="btn btn-primary" @onclick="QueueForMatch">Requeue</button>
+        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+        break;
+}
+
+@code {
+
+    enum GameState
+    {
+        OutsideOfGame,
+        FindingPlayer,
+        PlayerFound,
+        Accepted,
+        BothAccepted,
+        Rejected
+    }
+
+    private GameState _state = GameState.OutsideOfGame;
+    private string _name;
+    private bool _showInvalidNameWarning;
+    private PlayerWaitingForGame _playerWaitingForGame;
+    private PlayerWaitingForGame _opponent;
+    private readonly Regex nameValidationRegex = new Regex(@"\w+#\d\d\d\d\d", RegexOptions.Compiled);
+    private PotentialMatch _match;
+
+    private async void QueueForMatch()
+    {
+        if (NameIsValid())
+        {
+            _showInvalidNameWarning = false;
+            Queue.MatchFound += QueueOnMatchFound;
+            Queue.MatchAcceptedByBothPlayers += MatchAcceptedByBothPlayers;
+            Queue.MatchAbandoned += MatchAbandoned;
+            _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
+            await Queue.Add(_playerWaitingForGame);
+            _state = GameState.FindingPlayer;
         }
+        else
+        {
+            _showInvalidNameWarning = true;
+            InvokeAsync(StateHasChanged);
+        }
+    }
 
-        @code {
+    private void MatchAbandoned(PotentialMatch match)
+    {
+        if (match == null) return;
+        if (_match?.Id != match.Id) return;
+        _state = GameState.Rejected;
+        Queue.MatchAbandoned -= MatchAbandoned;
+        InvokeAsync(StateHasChanged);
+    }
 
-            enum GameState
-            {
-                OutsideOfGame,
-                FindingPlayer,
-                PlayerFound,
-                Accepted,
-                BothAccepted,
-                Rejected
-            }
+    private void MatchAcceptedByBothPlayers(PotentialMatch match)
+    {
+        if (_match?.Id != match.Id) return;
+        _state = GameState.BothAccepted;
+        InvokeAsync(StateHasChanged);
+        Queue.MatchAcceptedByBothPlayers -= MatchAcceptedByBothPlayers;
+        Queue.MatchAbandoned -= MatchAbandoned;
+    }
 
-            private GameState _state = GameState.OutsideOfGame;
-            private string _name;
-            private bool _showInvalidNameWarning;
-            private PlayerWaitingForGame _playerWaitingForGame;
-            private PlayerWaitingForGame _opponent;
-            private readonly Regex nameValidationRegex = new Regex(@"\w+#\d\d\d\d\d", RegexOptions.Compiled);
-            private PotentialMatch _match;
+    private async void AcceptMatch()
+    {
+        _state = GameState.Accepted;
+        InvokeAsync(StateHasChanged);
+        await Queue.AcceptGame(_match.Id, Session.Id);
+    }
 
-            private async void QueueForMatch()
-            {
-                if (NameIsValid())
-                {
-                    _showInvalidNameWarning = false;
-                    Queue.MatchFound += QueueOnMatchFound;
-                    Queue.MatchAcceptedByBothPlayers += MatchAcceptedByBothPlayers;
-                    Queue.MatchAbandoned += MatchAbandoned;
-                    _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
-                    await Queue.Add(_playerWaitingForGame);
-                    _state = GameState.FindingPlayer;
-                }
-                else
-                {
-                    _showInvalidNameWarning = true;
-                    InvokeAsync(StateHasChanged);
-                }
-            }
+    private async void Cancel()
+    {
+        _state = GameState.OutsideOfGame;
+        _match = null;
+        InvokeAsync(StateHasChanged);
+    }
 
-            private void MatchAbandoned(PotentialMatch match)
-            {
-                if(match == null) return;
-                if (_match?.Id != match.Id) return;
-                _state = GameState.Rejected;
-                Queue.MatchAbandoned -= MatchAbandoned;
-                InvokeAsync(StateHasChanged);
-            }
+    private bool NameIsValid() => nameValidationRegex.IsMatch(_name);
 
-            private void MatchAcceptedByBothPlayers(PotentialMatch match)
-            {
-                if (_match?.Id != match.Id) return;
-                _state = GameState.BothAccepted;
-                InvokeAsync(StateHasChanged);
-                Queue.MatchAcceptedByBothPlayers -= MatchAcceptedByBothPlayers;
-                Queue.MatchAbandoned -= MatchAbandoned;
-            }
-
-            private async void AcceptMatch()
-            {
-                _state = GameState.Accepted;
-                InvokeAsync(StateHasChanged);
-                await Queue.AcceptGame(_match.Id, Session.Id);
-            }
-
-            private async void Cancel()
-            {
-                _state = GameState.OutsideOfGame;
-                _match = null;
-                InvokeAsync(StateHasChanged);
-            }
-
-            private bool NameIsValid() => nameValidationRegex.IsMatch(_name);
-
-            private void QueueOnMatchFound(PotentialMatch match)
-            {
-                var players = match.PlayersWaitingForGames;
-                if(!players.Contains(_playerWaitingForGame)) return;
-                _match = match;
-                _opponent = players.First(p => p.Id != Session.Id);
-                _state = GameState.PlayerFound;
-                Queue.MatchFound -= QueueOnMatchFound;
-                InvokeAsync(StateHasChanged);
-            }
+    private void QueueOnMatchFound(PotentialMatch match)
+    {
+        var players = match.PlayersWaitingForGames;
+        if (!players.Contains(_playerWaitingForGame)) return;
+        _match = match;
+        _opponent = players.First(p => p.Id != Session.Id);
+        _state = GameState.PlayerFound;
+        Queue.MatchFound -= QueueOnMatchFound;
+        InvokeAsync(StateHasChanged);
+    }
 
 }
