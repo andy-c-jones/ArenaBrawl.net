@@ -5,6 +5,8 @@ namespace ArenaBrawl.InMemoryData
 {
     public class PlayerWaitingForGame
     {
+        public bool Accepted { get; set; }
+
         private sealed class IdInGameNameEqualityComparer : IEqualityComparer<PlayerWaitingForGame>
         {
             public bool Equals(PlayerWaitingForGame x, PlayerWaitingForGame y)
