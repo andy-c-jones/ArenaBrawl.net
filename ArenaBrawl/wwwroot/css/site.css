@@ -20,12 +20,12 @@ a, .btn-link {
 
 .btn-primary {
     color: #fff;
-    background-color: #33211e;
-    border-color: #33211e;
+    background-color: #da6d24;
+    border-color: #da6d24;
 }
 
 :hover.btn-primary {
-    background-color: #573935;
+    background-color: #a0501a;
 }
 
 .input-txt {

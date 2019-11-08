@@ -9,7 +9,7 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
 {
     public class MatchmatchingQueue
     {
-        private readonly ConcurrentBag<PlayerWaitingForGame> _queue = new ConcurrentBag<PlayerWaitingForGame>();
+        private readonly ConcurrentDictionary<Guid, PlayerWaitingForGame> _queue = new ConcurrentDictionary<Guid, PlayerWaitingForGame>();
         private readonly ConcurrentDictionary<Guid, PotentialMatch> _matches = new ConcurrentDictionary<Guid, PotentialMatch>();
 
         private CancellationTokenSource _pollingCancellationToken;
@@ -21,7 +21,7 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
 
         public async Task<bool> Add(PlayerWaitingForGame playerWaitingForGame)
         {
-            _queue.Add(playerWaitingForGame);
+            _queue.AddOrUpdate(playerWaitingForGame.Id, (id) => playerWaitingForGame, (id, v) => playerWaitingForGame);
             return true;
         }
 
@@ -47,7 +47,7 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
                 return true;
             }
 
-            _matches.TryRemove(result.Id, out var x);
+            _matches.TryRemove(result.Id, out _);
             MatchAcceptedByBothPlayers?.Invoke(result);
             return true;
         }
@@ -60,8 +60,9 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
             {
                 if (_queue.Count > 1)
                 {
-                    _queue.TryTake(out var playerOne);
-                    _queue.TryTake(out var playerTwo);
+                    _queue.TryRemove(_queue.Keys.ElementAt(0), out var playerOne);
+                    _queue.TryRemove(_queue.Keys.ElementAt(0), out var playerTwo);
+
                     var potentialMatch = new PotentialMatch(new List<PlayerWaitingForGame>
                     {
                         playerOne,
@@ -92,5 +93,9 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
             _pollingCancellationToken.Cancel();
         }
 
+        public void LeaveQueue(Guid sessionId)
+        {
+            _queue.TryRemove(sessionId, out _);
+        }
     }
 }

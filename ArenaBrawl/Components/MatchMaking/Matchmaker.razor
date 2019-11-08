@@ -51,6 +51,7 @@
     case GameState.FindingPlayer:
         <div class="lds-dual-ring"></div>
         <p>Finding player please wait...</p>
+        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
         break;
     case GameState.PlayerFound:
         <div class="">
@@ -63,6 +64,7 @@
     case GameState.Accepted:
         <div class="lds-dual-ring"></div>
         <p>Waiting for the other player...</p>
+        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
         break;
     case GameState.BothAccepted:
         <div class="">
@@ -149,6 +151,7 @@
     {
         _state = GameState.OutsideOfGame;
         _match = null;
+        Queue.LeaveQueue(Session.Id);
         InvokeAsync(StateHasChanged);
     }
 
