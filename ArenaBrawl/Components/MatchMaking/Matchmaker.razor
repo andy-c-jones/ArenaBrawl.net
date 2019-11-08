@@ -92,7 +92,7 @@
             private void MatchAbandoned(PotentialMatch match)
             {
                 if(match == null) return;
-                if (_match.Id != match.Id) return;
+                if (_match?.Id != match.Id) return;
                 _state = GameState.Rejected;
                 Queue.MatchAbandoned -= MatchAbandoned;
                 InvokeAsync(StateHasChanged);
@@ -100,22 +100,24 @@
 
             private void MatchAcceptedByBothPlayers(PotentialMatch match)
             {
-                if (_match.Id != match.Id) return;
+                if (_match?.Id != match.Id) return;
                 _state = GameState.BothAccepted;
+                InvokeAsync(StateHasChanged);
                 Queue.MatchAcceptedByBothPlayers -= MatchAcceptedByBothPlayers;
                 Queue.MatchAbandoned -= MatchAbandoned;
-                InvokeAsync(StateHasChanged);
             }
 
             private async void AcceptMatch()
             {
-                var canAccept = await Queue.AcceptGame(_match.Id, Session.Id);
-                _state = !canAccept ? GameState.Rejected : GameState.Accepted;
+                _state = GameState.Accepted;
+                InvokeAsync(StateHasChanged);
+                await Queue.AcceptGame(_match.Id, Session.Id);
             }
 
             private async void Cancel()
             {
                 _state = GameState.OutsideOfGame;
+                _match = null;
                 InvokeAsync(StateHasChanged);
             }
 
