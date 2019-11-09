@@ -10,12 +10,9 @@ a, .btn-link {
     color: #33211e;
 }
 
-.title {
-    font-size: 5em;
-    line-height: .8;
-    letter-spacing: -4px;
-    margin-bottom: 32px;
-    font-weight: 700;
+@font-face {
+    font-family: 'Magic';
+    src: url('magic.ttf');
 }
 
 .btn-primary {
