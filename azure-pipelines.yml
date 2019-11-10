@@ -62,19 +62,20 @@ steps:
     resourceGroupName: 'ArenaBrawl'
     appSettings: |
       [
-          {"name": "Payments:ApiKey"
+        {
+          "name": "Payments:ApiKey"
           "value": "sk_test_yjx9mc6DO9k1hpqrhAjVFign00scbuVrok",
           "slotSetting": true},
-      {
+        {
           "name": "Payments:SuccessUrl",
           "value": "https://arenabrawl.net/thanks?session_id={CHECKOUT_SESSION_ID}",
-           "slotSetting": true
-         },
-      {
+          "slotSetting": true
+        },
+        {
           "name": "Payments:CancelUrl",
           "value": "https://arenabrawl.net/",
-           "slotSetting": true
-         }
+          "slotSetting": true
+        }
       ]
 
 - task: AzureRmWebAppDeployment@4
