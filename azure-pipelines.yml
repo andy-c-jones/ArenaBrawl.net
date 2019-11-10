@@ -76,6 +76,11 @@ steps:
           "name": "Payments:CancelUrl",
           "value": "https://arenabrawl.net/",
           "slotSetting": true
+        },
+        {
+          "name": "Payments:PublicKey",
+          "value": "pk_live_p1blPTmJBikvkfqlcWjsURbP00SY4ItjgB",
+          "slotSetting": true
         }
       ]
 
