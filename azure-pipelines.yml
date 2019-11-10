@@ -64,7 +64,7 @@ steps:
       [
         {
           "name": "Payments:ApiKey",
-          "value": $(stripePaymentApiSecret),
+          "value": "$(stripePaymentApiSecret)",
           "slotSetting": true
         },
         {
