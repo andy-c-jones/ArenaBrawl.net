@@ -64,7 +64,7 @@ steps:
       [
         {
           "name": "Payments:ApiKey",
-          "value": "sk_test_yjx9mc6DO9k1hpqrhAjVFign00scbuVrok",
+          "value": $(stripePaymentApiSecret),
           "slotSetting": true
         },
         {
