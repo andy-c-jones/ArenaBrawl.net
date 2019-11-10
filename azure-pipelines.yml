@@ -55,6 +55,27 @@ steps:
     SqlFile: '$(System.DefaultWorkingDirectory)/ArenaBrawl/migration.sql'
     IpDetectionMethod: 'AutoDetect' 
 
+- task: AzureAppServiceSettings@1
+  inputs:
+    azureSubscription: 'Visual Studio Professional with MSDN(48921dc3-b5bc-4bdd-8a68-f09da744c789)'
+    appName: 'arenabrawl'
+    resourceGroupName: 'ArenaBrawl'
+    appSettings: |
+      [{"name": "Payments:ApiKey"
+          "value": "sk_test_yjx9mc6DO9k1hpqrhAjVFign00scbuVrok",
+          "slotSetting": true},
+      {
+          "name": "SuccessUrl",
+          "value": "https://arenabrawl.net/thanks?session_id={CHECKOUT_SESSION_ID}",
+           "slotSetting": 
+         },
+      {
+          "name": "CancelUrl",
+          "value": "https://arenabrawl.net/",
+           "slotSetting": 
+         }
+      ]
+
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
