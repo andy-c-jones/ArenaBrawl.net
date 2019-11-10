@@ -23,7 +23,7 @@ namespace ArenaBrawl
                     // standalone package Microsoft.Extensions.Logging.ApplicationInsights
                     // or if you want to capture logs from early in the application startup
                     // pipeline from Startup.cs or Program.cs itself.
-                    builder.AddApplicationInsights();
+                    builder.AddApplicationInsights("15fe39ef-fec4-4c4a-a602-e40cc35a17b4");
 
                     // Optional: Apply filters to control what logs are sent to Application Insights.
                     // The following configures LogLevel Information or above to be sent to
