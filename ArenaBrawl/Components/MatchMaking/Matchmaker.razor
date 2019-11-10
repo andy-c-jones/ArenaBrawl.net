@@ -38,8 +38,6 @@
 {
     case GameState.OutsideOfGame:
         <div>
-            <p>To find a game of MTG:A Brawl please enter your name and queue up for a match.</p>
-            <p>The system will pair you up with another player when one becomes available.</p>
             <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
             <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
             @if (_showInvalidNameWarning)
