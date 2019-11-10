@@ -45,6 +45,7 @@ namespace ArenaBrawl
             services.AddSingleton<PaymentService>();
             services.AddScoped<PlayerSession>();
             services.AddScoped<CircuitHandler, PlayerCountCircuitHandler>();
+            services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
