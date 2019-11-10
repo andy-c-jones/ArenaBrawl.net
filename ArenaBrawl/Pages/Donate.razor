@@ -1,0 +1,38 @@
+﻿@page "/donate"
+@using ArenaBrawl.Payments
+@inject PaymentService Payments
+@inject IJSRuntime JSRuntime;
+
+<div class="text-center">
+    <div>
+        <span>I would like to donate in: </span>
+        <select class="input-txt" name="Currency" @onchange="CurrencySelection">
+            @foreach (var currency in Currencies.Supported)
+             {
+             <option value=@currency.IsoCode>@currency.HumanReadable</option>
+             };
+        </select>
+    </div>
+    
+    <div>
+        <span>@_selectedCurrency.Symbol</span>
+        <input class="input-txt" type="number" min="0.01" step="0.01" max="2500" @bind=_donationAmount />
+    </div>
+    <button class="btn btn-primary" @onclick="CheckoutDonation">Donate</button>
+</div>
+@code {
+    private async void CurrencySelection(ChangeEventArgs e)
+    {
+        var selectedIsoCode = e.Value.ToString();
+        _selectedCurrency = Currencies.Supported.Find(c => c.IsoCode == selectedIsoCode);
+    }
+
+    private async void CheckoutDonation()
+    {
+        JSRuntime.InvokeAsync<string>("checkoutDonation", Payments.CreatePaymentSession(_selectedCurrency, ConvertToLowestDenomination()));
+    }
+
+    private int ConvertToLowestDenomination() => (int) (_donationAmount * 100);
+    private decimal _donationAmount = 3.00M;
+    private Currency _selectedCurrency = Currencies.Supported.Find(c => c.IsoCode == "gbp");
+}

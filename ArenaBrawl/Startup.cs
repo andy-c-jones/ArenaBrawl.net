@@ -2,6 +2,7 @@ using ArenaBrawl.Areas.Identity;
 using ArenaBrawl.Data;
 using ArenaBrawl.InMemoryData;
 using ArenaBrawl.InMemoryData.Matchmaking;
+using ArenaBrawl.Payments;
 using ArenaBrawl.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -40,6 +41,7 @@ namespace ArenaBrawl
                 >();
             services.AddSingleton<MatchmatchingQueue>();
             services.AddSingleton<PlayerCountRepository>();
+            services.AddSingleton<PaymentService>();
             services.AddScoped<PlayerSession>();
             services.AddScoped<CircuitHandler, PlayerCountCircuitHandler>();
         }

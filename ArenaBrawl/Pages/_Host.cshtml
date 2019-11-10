@@ -11,6 +11,16 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        window.checkoutDonation = function(sessionId) {
+            var stripe = Stripe('pk_test_vzf04x4D7qFNElGUxBg930JT007nXKZlmn');
+            stripe.redirectToCheckout({
+                sessionId: sessionId
+            });
+        }
+        
+    </script>
 </head>
 <body>
     <app>

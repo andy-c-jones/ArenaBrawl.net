@@ -29,6 +29,7 @@ a, .btn-link {
     padding: 6px;
     border: 1px;
     border-radius: 3px;
+    margin: 8px;
 }
 
 app {
