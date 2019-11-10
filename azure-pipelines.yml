@@ -66,12 +66,12 @@ steps:
           "value": "sk_test_yjx9mc6DO9k1hpqrhAjVFign00scbuVrok",
           "slotSetting": true},
       {
-          "name": "SuccessUrl",
+          "name": "Payments:SuccessUrl",
           "value": "https://arenabrawl.net/thanks?session_id={CHECKOUT_SESSION_ID}",
            "slotSetting": true
          },
       {
-          "name": "CancelUrl",
+          "name": "Payments:CancelUrl",
           "value": "https://arenabrawl.net/",
            "slotSetting": true
          }
