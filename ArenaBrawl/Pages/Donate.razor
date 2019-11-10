@@ -1,25 +1,51 @@
 ﻿@page "/donate"
 @using ArenaBrawl.Payments
+@using ArenaBrawl.Components
 @inject PaymentService Payments
 @inject IJSRuntime JSRuntime;
 
-<div class="text-center">
-    <div>
-        <span>I would like to donate in: </span>
-        <select class="input-txt" name="Currency" @onchange="CurrencySelection">
-            @foreach (var currency in Currencies.Supported)
-             {
-             <option value=@currency.IsoCode>@currency.HumanReadable</option>
-             };
-        </select>
+<ArenaBrawlLogo></ArenaBrawlLogo>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-lg-5 content-box">
+            <div class="text-center">
+                <p>
+                    Arena Brawl is entirely free and supported only by donations. Any amount donated will go into the running costs of the site.
+                </p>
+                <p>
+                    If we receive enough donations that the money exceeds the monthly cost of the running the site then that money will be put into development of new features such as support for tournaments, other game modes etc
+                </p>
+                <p>
+                    If the site becomes popular we will start a blog to inform the community of where donations go and to keep you informed for work to improve the site.
+                </p>
+
+                <div>
+                    <span>I would like to donate in: </span>
+                    <select class="input-txt" name="Currency" @onchange="CurrencySelection">
+                        @foreach (var currency in Currencies.Supported)
+                        {
+                            <option value=@currency.IsoCode>@currency.HumanReadable</option>
+                        };
+                    </select>
+                </div>
+
+                <div>
+                    <span>@_selectedCurrency.Symbol</span>
+                    <input class="input-txt" type="number" min="0.01" step="0.01" max="2500" @bind=_donationAmount />
+                </div>
+                <button class="btn btn-primary" @onclick="CheckoutDonation">Donate</button>
+                <button class="btn btn-primary" onclick="window.location.href = '/';">Return to Homepage</button>
+            </div>
+        </div>
+        <div class="col">
+        </div>
     </div>
-    
-    <div>
-        <span>@_selectedCurrency.Symbol</span>
-        <input class="input-txt" type="number" min="0.01" step="0.01" max="2500" @bind=_donationAmount />
-    </div>
-    <button class="btn btn-primary" @onclick="CheckoutDonation">Donate</button>
 </div>
+
+
 @code {
     private async void CurrencySelection(ChangeEventArgs e)
     {
@@ -32,7 +58,7 @@
         JSRuntime.InvokeAsync<string>("checkoutDonation", Payments.CreatePaymentSession(_selectedCurrency, ConvertToLowestDenomination()));
     }
 
-    private int ConvertToLowestDenomination() => (int) (_donationAmount * 100);
-    private decimal _donationAmount = 3.00M;
+    private int ConvertToLowestDenomination() => (int)(_donationAmount * 100);
+    private decimal _donationAmount = 5.00M;
     private Currency _selectedCurrency = Currencies.Supported.Find(c => c.IsoCode == "gbp");
 }

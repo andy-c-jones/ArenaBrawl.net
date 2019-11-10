@@ -1,5 +1,7 @@
 ﻿@page "/"
+@using Microsoft.Extensions.Configuration
 @namespace ArenaBrawl.Pages
+@inject IConfiguration Configuration
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
@@ -14,7 +16,7 @@
     <script src="https://js.stripe.com/v3/"></script>
     <script>
         window.checkoutDonation = function(sessionId) {
-            var stripe = Stripe('pk_test_vzf04x4D7qFNElGUxBg930JT007nXKZlmn');
+            var stripe = Stripe('@GetPublicPaymentKey()');
             stripe.redirectToCheckout({
                 sessionId: sessionId
             });
@@ -30,3 +32,7 @@
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>
+@functions
+{
+    string GetPublicPaymentKey() => Configuration.GetValue<string>("Payments:PublicKey");
+}
