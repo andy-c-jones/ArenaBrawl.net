@@ -63,7 +63,7 @@ steps:
     appSettings: |
       [
         {
-          "name": "Payments:ApiKey"
+          "name": "Payments:ApiKey",
           "value": "sk_test_yjx9mc6DO9k1hpqrhAjVFign00scbuVrok",
           "slotSetting": true
         },
