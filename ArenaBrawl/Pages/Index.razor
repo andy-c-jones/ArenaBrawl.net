@@ -20,7 +20,30 @@
         </div>
         <div class="col-lg-5 content-box">
             <div>
-                <Matchmaker></Matchmaker>
+
+                @if (_formatSelected == false)
+                {
+                    <div class="text-center">
+                        <p >Please select the format you would like to play:</p>
+                        <select class="input-txt" name="Format" @onchange="FormatSelection">
+                            <option value="Standard">Standard</option>
+                            <option value="Historic">Historic</option>
+                        </select>
+
+                         <button class="btn btn-primary" @onclick="FormatSelectToggled">Start playing @_selectedFormat</button>
+                    </div>
+                }
+                else
+                {
+                    @if (_selectedFormat == "Standard")
+                    {
+                        <Matchmaker></Matchmaker>
+                    }
+                    else
+                    {
+                        <HistoricMatchmaker></HistoricMatchmaker>
+                    }
+                }
             </div>
         </div>
         <div class="col">
@@ -49,4 +72,19 @@
     
 
     @code {
+
+        private void FormatSelectToggled()
+        {
+            _formatSelected = !_formatSelected;
+        }
+
+        private void FormatSelection(ChangeEventArgs e)
+        {
+            var format = e.Value.ToString();
+            _selectedFormat = format;
+            InvokeAsync(StateHasChanged);
+        }
+
+        private string _selectedFormat = "Standard";
+        private bool _formatSelected = false;
     }

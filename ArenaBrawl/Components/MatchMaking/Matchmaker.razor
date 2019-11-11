@@ -39,15 +39,19 @@
 @switch (_state)
 {
     case GameState.OutsideOfGame:
-        <div class="text-center">
-            <p>Start playing:</p>
-            <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
-            <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
-            @if (_showInvalidNameWarning)
-            {
-                <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
-            }
-        </div>
+<div class="text-center">
+    <p>Start playing Standard:</p>
+    <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
+    <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+
+
+    @if (_showInvalidNameWarning)
+    {
+        <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
+    }
+    <br />
+    <button class="btn btn-primary" onclick="window.location.href = '/';">Back to format selection</button>
+</div>
         break;
     case GameState.FindingPlayer:
         <div class="text-center">

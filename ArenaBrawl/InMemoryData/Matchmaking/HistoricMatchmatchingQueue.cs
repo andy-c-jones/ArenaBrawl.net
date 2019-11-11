@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace ArenaBrawl.InMemoryData.Matchmaking
 {
-    public class HistoricMatchmakingQueue
+    public class MatchmatchingQueue
     {
         private readonly ConcurrentDictionary<Guid, PlayerWaitingForGame> _queue = new ConcurrentDictionary<Guid, PlayerWaitingForGame>();
         private readonly ConcurrentDictionary<Guid, PotentialMatch> _matches = new ConcurrentDictionary<Guid, PotentialMatch>();
 
         private CancellationTokenSource _pollingCancellationToken;
 
-        public HistoricMatchmakingQueue()
+        public MatchmatchingQueue()
         {
             AttemptToMatchPlayers();
         }
@@ -88,7 +88,7 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
         public event Action<PotentialMatch> MatchAcceptedByBothPlayers;
         public event Action<PotentialMatch> MatchAbandoned;
 
-        ~HistoricMatchmakingQueue()
+        ~MatchmatchingQueue()
         {
             _pollingCancellationToken.Cancel();
         }

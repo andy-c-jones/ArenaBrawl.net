@@ -41,6 +41,7 @@ namespace ArenaBrawl
                 .AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>
                 >();
             services.AddSingleton<MatchmatchingQueue>();
+            services.AddSingleton<HistoricMatchmakingQueue>();
             services.AddSingleton<PlayerCountRepository>();
             services.AddSingleton<PaymentService>();
             services.AddScoped<PlayerSession>();
