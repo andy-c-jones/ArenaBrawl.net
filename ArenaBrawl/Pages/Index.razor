@@ -1,12 +1,11 @@
 ﻿@page "/"
 @using ArenaBrawl.Components
 @using ArenaBrawl.Components.MatchMaking
-
 <ArenaBrawlLogo></ArenaBrawlLogo>
 
-<div class="container">
+<div class="container w-100">
     <div class="row">
-        <div class="col">
+        <div class="col-4">
             <p>Arena Brawl will connect you to another player who wants to play Magic the Gathering: Arena, Brawl mode.</p>
             <p>Once you enter your player ID and click "Find a game", you will be matched with another active online player.</p>
             <p>Once your opponent accepts the match you will receive their player Id. You can then challenge them to a private game. Then when your finished you can search for another opponent.</p>
@@ -18,19 +17,19 @@
                 </ul>
             </p>
         </div>
-        <div class="col-lg-5 content-box">
+        <div class="col-4 content-box">
             <div>
 
                 @if (_formatSelected == false)
                 {
                     <div class="text-center">
-                        <p >Please select the format you would like to play:</p>
+                        <p>Please select the format you would like to play:</p>
                         <select class="input-txt" name="Format" @onchange="FormatSelection">
                             <option value="Standard">Standard</option>
                             <option value="Historic">Historic</option>
                         </select>
 
-                         <button class="btn btn-primary" @onclick="FormatSelectToggled">Start playing @_selectedFormat</button>
+                        <button class="btn btn-primary" @onclick="FormatSelectToggled">Start playing @_selectedFormat</button>
                     </div>
                 }
                 else
@@ -46,45 +45,31 @@
                 }
             </div>
         </div>
-        <div class="col">
-
-
-            <p>
-                <span style="font-size: 20px">To challenge your opponent to a brawl follow these steps in the client:</span>
-                <ol>
-                    <li>Click on the crossed swords icon in the top right corner of the Arena client</li>
-                    <li>Select Challenge Match</li>
-                    <li>Click the drop-down icon arrow</li>
-                    <li>Select Deck Type: Brawl</li>
-                    <li>Select Coin Flip</li>
-                    <li>Enter your opponent's player Id in the box below </li>
-                    <li>Select your Brawl deck</li>
-                    <li>Click Play</li>
-                    <li>Wait for your opponent. The game will start when both match players hit play</li>
-                </ol>
-            </p>
+        <div class="col-4">
+            <a class="twitter-timeline" data-width="300" data-height="700" data-dnt="true" data-theme="dark" href="https://twitter.com/ArenaBrawlNet?ref_src=twsrc%5Etfw">Tweets by ArenaBrawlNet</a>
+            <script suppress-error="BL9992" async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
     </div>
 </div>
 <p style="font-size: 12px; text-align: right; margin-top: 30px"><a href="/donate">Donations</a> to keep the servers running are welcome.</p>
 <p style="font-size: 12px; text-align: right;">Please send any questions or feedback to <a href="mailto:feedback@arenabrawl.net" target="_top">feedback@arenabrawl.net</a>. </p>
 
-    
 
-    @code {
 
-        private void FormatSelectToggled()
-        {
-            _formatSelected = !_formatSelected;
-        }
+@code {
 
-        private void FormatSelection(ChangeEventArgs e)
-        {
-            var format = e.Value.ToString();
-            _selectedFormat = format;
-            InvokeAsync(StateHasChanged);
-        }
-
-        private string _selectedFormat = "Standard";
-        private bool _formatSelected = false;
+    private void FormatSelectToggled()
+    {
+        _formatSelected = !_formatSelected;
     }
+
+    private void FormatSelection(ChangeEventArgs e)
+    {
+        var format = e.Value.ToString();
+        _selectedFormat = format;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string _selectedFormat = "Standard";
+    private bool _formatSelected = false;
+}

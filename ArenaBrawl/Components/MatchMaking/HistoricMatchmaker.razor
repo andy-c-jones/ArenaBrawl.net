@@ -77,11 +77,24 @@
     case GameState.BothAccepted:
 <div class="">
     <p class="text-center">You have been matched with:</p>
-    <h3 class="text-center"> @_opponent.InGameName</h3>
+    <h3 class="text-center" id="opponentName" data-tooltip title="Click to copy to clipboard" style="cursor: pointer" @onclick="CopyToClipboard"> @_opponent.InGameName</h3>
    
    <div style="text-align: center">
        <button class="btn btn-primary"  @onclick="Cancel">Finished</button>
    </div>
+
+   <p>To challenge your opponent to a brawl follow these steps in the client:</p>
+   <ol>
+       <li>Click on the crossed swords icon in the top right corner of the Arena client</li>
+       <li>Select Challenge Match</li>
+       <li>Click the drop-down icon arrow</li>
+       <li>Select Deck Type: Brawl</li>
+       <li>Select Coin Flip</li>
+       <li>Enter your opponent's player Id in the box below</li>
+       <li>Select your Brawl deck</li>
+       <li>Click Play</li>
+       <li>Wait for your opponent. The game will start when both match players hit play</li>
+   </ol>
 </div>
         break;
     case GameState.Rejected:
@@ -108,7 +121,7 @@
     private bool _showInvalidNameWarning;
     private PlayerWaitingForGame _playerWaitingForGame;
     private PlayerWaitingForGame _opponent;
-    private readonly Regex nameValidationRegex = new Regex(@"\w+#\d\d\d\d\d", RegexOptions.Compiled);
+    private readonly Regex nameValidationRegex = new Regex(@".*#\d\d\d\d\d", RegexOptions.Compiled);
     private PotentialMatch _match;
 
     private async void QueueForMatch()
@@ -164,6 +177,8 @@
     }
 
     private bool NameIsValid() => nameValidationRegex.IsMatch(_name);
+
+    private void CopyToClipboard() => JSRuntime.InvokeAsync<string>("copyToClipboard",new object[0]);
 
     private void QueueOnMatchFound(PotentialMatch match)
     {
