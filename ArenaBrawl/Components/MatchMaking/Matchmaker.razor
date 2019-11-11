@@ -3,6 +3,8 @@
 @using ArenaBrawl.InMemoryData.Matchmaking
 @inject MatchmatchingQueue Queue
 @inject PlayerSession Session
+@inject IJSRuntime JSRuntime
+
 <style type="text/css">
 
     .lds-dual-ring {
@@ -167,6 +169,7 @@
         _match = match;
         _opponent = players.First(p => p.Id != Session.Id);
         _state = GameState.PlayerFound;
+        JSRuntime.InvokeAsync<string>("playMatchfound",new object[0]);
         Queue.MatchFound -= QueueOnMatchFound;
         InvokeAsync(StateHasChanged);
     }

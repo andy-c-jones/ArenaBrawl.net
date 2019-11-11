@@ -21,7 +21,12 @@
                 sessionId: sessionId
             });
         }
-        
+
+        window.playMatchfound = function playMatchfound() {
+            var audio = document.getElementById("MatchfoundAudio");
+            audio.play();
+        }
+
     </script>
 </head>
 <body>
@@ -29,7 +34,8 @@
         @(await Html.RenderComponentAsync<App>(RenderMode.ServerPrerendered))
     </app>
 
-    <script src="_framework/blazor.server.js"></script>
+<script src="_framework/blazor.server.js"></script>
+<audio id="MatchfoundAudio" src="/audio/swords.mp3"></audio>
 </body>
 </html>
 @functions
