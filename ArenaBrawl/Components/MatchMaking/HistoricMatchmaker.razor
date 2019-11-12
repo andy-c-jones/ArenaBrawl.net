@@ -1,0 +1,195 @@
+﻿@using System.Text.RegularExpressions
+@using ArenaBrawl.InMemoryData
+@using ArenaBrawl.InMemoryData.Matchmaking
+@inject HistoricMatchmakingQueue Queue
+@inject PlayerSession Session
+@inject IJSRuntime JSRuntime
+
+<style type="text/css">
+
+    .lds-dual-ring {
+        display: inline-block;
+        width: 64px;
+        height: 64px;
+    }
+
+        .lds-dual-ring:after {
+            content: " ";
+            display: block;
+            width: 46px;
+            height: 46px;
+            margin: 1px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            border-color: #fff transparent #fff transparent;
+            animation: lds-dual-ring 1.2s linear infinite;
+        }
+
+    @@keyframes lds-dual-ring {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+@switch (_state)
+{
+    case GameState.OutsideOfGame:
+<div class="text-center">
+    <p>Start playing Historic:</p>
+    <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
+    <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+
+    @if (_showInvalidNameWarning)
+    {
+        <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
+    }
+    <br />
+    <button class="btn btn-primary" onclick="window.location.href = '/';">Back to format selection</button>
+</div>
+        break;
+    case GameState.FindingPlayer:
+        <div class="text-center">
+            <div class="lds-dual-ring"></div>
+            <p>Finding player please wait...</p>
+            <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+        </div>
+        break;
+    case GameState.PlayerFound:
+        <div class="text-center">
+            <p>Player found!</p>
+            <countdown></countdown>
+            <button class="btn btn-primary" @onclick="AcceptMatch">Accept</button>
+            <button class="btn btn-primary" @onclick="Cancel">Reject</button>
+        </div>
+        break;
+    case GameState.Accepted:
+        <div class="text-center">
+            <div class="lds-dual-ring"></div>
+            <p>Waiting for the other player...</p>
+            <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+        </div>
+        break;
+    case GameState.BothAccepted:
+<div class="">
+    <p class="text-center">You have been matched with:</p>
+    <h3 class="text-center" id="opponentName" data-tooltip title="Click to copy to clipboard" style="cursor: pointer" @onclick="CopyToClipboard"> @_opponent.InGameName</h3>
+   
+   <div style="text-align: center">
+       <button class="btn btn-primary"  @onclick="Cancel">Finished</button>
+   </div>
+
+   <p>To challenge your opponent to a brawl follow these steps in the client:</p>
+   <ol>
+       <li>Click on the crossed swords icon in the top right corner of the Arena client</li>
+       <li>Select Challenge Match</li>
+       <li>Click the drop-down icon arrow</li>
+       <li>Select Deck Type: Brawl</li>
+       <li>Select Coin Flip</li>
+       <li>Enter your opponent's player Id in the box below</li>
+       <li>Select your Brawl deck</li>
+       <li>Click Play</li>
+       <li>Wait for your opponent. The game will start when both match players hit play</li>
+   </ol>
+</div>
+        break;
+    case GameState.Rejected:
+        <p>The other player has rejected the match up</p>
+        <button class="btn btn-primary" @onclick="QueueForMatch">Requeue</button>
+        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+        break;
+}
+
+@code {
+
+    enum GameState
+    {
+        OutsideOfGame,
+        FindingPlayer,
+        PlayerFound,
+        Accepted,
+        BothAccepted,
+        Rejected
+    }
+
+    private GameState _state = GameState.OutsideOfGame;
+    private string _name = "";
+    private bool _showInvalidNameWarning;
+    private PlayerWaitingForGame _playerWaitingForGame;
+    private PlayerWaitingForGame _opponent;
+    private readonly Regex nameValidationRegex = new Regex(@".*#\d\d\d\d\d", RegexOptions.Compiled);
+    private PotentialMatch _match;
+
+    private async void QueueForMatch()
+    {
+        if (NameIsValid())
+        {
+            _showInvalidNameWarning = false;
+            Queue.MatchFound += QueueOnMatchFound;
+            Queue.MatchAcceptedByBothPlayers += MatchAcceptedByBothPlayers;
+            Queue.MatchAbandoned += MatchAbandoned;
+            _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
+            await Queue.Add(_playerWaitingForGame);
+            _state = GameState.FindingPlayer;
+        }
+        else
+        {
+            _showInvalidNameWarning = true;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void MatchAbandoned(PotentialMatch match)
+    {
+        if (match == null) return;
+        if (_match?.Id != match.Id) return;
+        _state = GameState.Rejected;
+        Queue.MatchAbandoned -= MatchAbandoned;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void MatchAcceptedByBothPlayers(PotentialMatch match)
+    {
+        if (_match?.Id != match.Id) return;
+        _state = GameState.BothAccepted;
+        InvokeAsync(StateHasChanged);
+        Queue.MatchAcceptedByBothPlayers -= MatchAcceptedByBothPlayers;
+        Queue.MatchAbandoned -= MatchAbandoned;
+    }
+
+    private async void AcceptMatch()
+    {
+        _state = GameState.Accepted;
+        InvokeAsync(StateHasChanged);
+        await Queue.AcceptGame(_match.Id, Session.Id);
+    }
+
+    private async void Cancel()
+    {
+        _state = GameState.OutsideOfGame;
+        _match = null;
+        Queue.LeaveQueue(Session.Id);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private bool NameIsValid() => nameValidationRegex.IsMatch(_name);
+
+    private void CopyToClipboard() => JSRuntime.InvokeAsync<string>("copyToClipboard",new object[0]);
+
+    private void QueueOnMatchFound(PotentialMatch match)
+    {
+        var players = match.PlayersWaitingForGames;
+        if (!players.Contains(_playerWaitingForGame)) return;
+        _match = match;
+        _opponent = players.First(p => p.Id != Session.Id);
+        _state = GameState.PlayerFound;
+        JSRuntime.InvokeAsync<string>("playMatchfound",new object[0]);
+        Queue.MatchFound -= QueueOnMatchFound;
+        InvokeAsync(StateHasChanged);
+    }
+
+}

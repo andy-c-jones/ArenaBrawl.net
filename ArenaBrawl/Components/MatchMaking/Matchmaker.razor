@@ -3,6 +3,8 @@
 @using ArenaBrawl.InMemoryData.Matchmaking
 @inject MatchmatchingQueue Queue
 @inject PlayerSession Session
+@inject IJSRuntime JSRuntime
+
 <style type="text/css">
 
     .lds-dual-ring {
@@ -37,15 +39,19 @@
 @switch (_state)
 {
     case GameState.OutsideOfGame:
-        <div class="text-center">
-            <p>Start playing:</p>
-            <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
-            <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
-            @if (_showInvalidNameWarning)
-            {
-                <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
-            }
-        </div>
+<div class="text-center">
+    <p>Start playing Standard:</p>
+    <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
+    <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+
+
+    @if (_showInvalidNameWarning)
+    {
+        <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
+    }
+    <br />
+    <button class="btn btn-primary" onclick="window.location.href = '/';">Back to format selection</button>
+</div>
         break;
     case GameState.FindingPlayer:
         <div class="text-center">
@@ -70,13 +76,26 @@
         </div>
         break;
     case GameState.BothAccepted:
-<div class="">
-    <p class="text-center">You have been matched with:</p>
-    <h3 class="text-center"> @_opponent.InGameName</h3>
+<div class="text-center">
+    <p >You have been matched with:</p>
+    <h3 class="text-center" id="opponentName" data-tooltip title="Click to copy to clipboard" style="cursor: pointer" @onclick="CopyToClipboard"> @_opponent.InGameName</h3>
    
-   <div style="text-align: center">
+   <div>
        <button class="btn btn-primary"  @onclick="Cancel">Finished</button>
    </div>
+
+   <p>To challenge your opponent to a brawl follow these steps in the client:</p>
+    <ol>
+        <li>Click on the crossed swords icon in the top right corner of the Arena client</li>
+        <li>Select Challenge Match</li>
+        <li>Click the drop-down icon arrow</li>
+        <li>Select Deck Type: Brawl</li>
+        <li>Select Coin Flip</li>
+        <li>Enter your opponent's player Id in the box below</li>
+        <li>Select your Brawl deck</li>
+        <li>Click Play</li>
+        <li>Wait for your opponent. The game will start when both match players hit play</li>
+    </ol>
 </div>
         break;
     case GameState.Rejected:
@@ -99,11 +118,11 @@
     }
 
     private GameState _state = GameState.OutsideOfGame;
-    private string _name;
+    private string _name = "";
     private bool _showInvalidNameWarning;
     private PlayerWaitingForGame _playerWaitingForGame;
     private PlayerWaitingForGame _opponent;
-    private readonly Regex nameValidationRegex = new Regex(@"\w+#\d\d\d\d\d", RegexOptions.Compiled);
+    private readonly Regex nameValidationRegex = new Regex(@".*#\d\d\d\d\d", RegexOptions.Compiled);
     private PotentialMatch _match;
 
     private async void QueueForMatch()
@@ -158,6 +177,8 @@
         InvokeAsync(StateHasChanged);
     }
 
+    private void CopyToClipboard() => JSRuntime.InvokeAsync<string>("copyToClipboard",new object[0]);
+
     private bool NameIsValid() => nameValidationRegex.IsMatch(_name);
 
     private void QueueOnMatchFound(PotentialMatch match)
@@ -167,6 +188,7 @@
         _match = match;
         _opponent = players.First(p => p.Id != Session.Id);
         _state = GameState.PlayerFound;
+        JSRuntime.InvokeAsync<string>("playMatchfound",new object[0]);
         Queue.MatchFound -= QueueOnMatchFound;
         InvokeAsync(StateHasChanged);
     }

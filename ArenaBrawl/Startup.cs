@@ -4,6 +4,8 @@ using ArenaBrawl.InMemoryData;
 using ArenaBrawl.InMemoryData.Matchmaking;
 using ArenaBrawl.Payments;
 using ArenaBrawl.Services;
+using Microsoft.ApplicationInsights.Extensibility.EventCounterCollector;
+using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
@@ -41,11 +43,17 @@ namespace ArenaBrawl
                 .AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>
                 >();
             services.AddSingleton<MatchmatchingQueue>();
+            services.AddSingleton<HistoricMatchmakingQueue>();
             services.AddSingleton<PlayerCountRepository>();
             services.AddSingleton<PaymentService>();
             services.AddScoped<PlayerSession>();
             services.AddScoped<CircuitHandler, PlayerCountCircuitHandler>();
             services.AddApplicationInsightsTelemetry();
+            services.ConfigureTelemetryModule<EventCounterCollectionModule>((module, o) =>
+                {
+                    module.Counters.Add(new EventCounterCollectionRequest("HistoricQueueSource", "PlayerJoinedHistoricQueue"));
+                    module.Counters.Add(new EventCounterCollectionRequest("StandardQueueSource", "PlayerJoinedStandardQueue"));
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -19,6 +19,7 @@ a, .btn-link {
     color: #fff;
     background-color: #da6d24;
     border-color: #da6d24;
+    margin: 0.2rem;
 }
 
 :hover.btn-primary {
