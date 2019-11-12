@@ -71,7 +71,30 @@
         <div class="text-center">
             <div class="lds-dual-ring"></div>
             <p>Finding player please wait...</p>
+            <p><span id="findingGameElapsedTime"></span></p>
             <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+
+            <script suppress-error="BL9992">
+                var element = document.getElementById('findingGameElapsedTime'),
+                    seconds = 0, minutes = 0,
+                    t;
+
+                function tick() {
+                    seconds++;
+                    if (seconds >= 60) {
+                        seconds = 0;
+                        minutes++;
+                    }
+    
+                    element.textContent = (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+
+                    timer();
+                }
+                function timer() {
+                    t = setTimeout(tick, 1000);
+                }
+                tick();
+            </script>
         </div>
         break;
     case GameState.PlayerFound:
