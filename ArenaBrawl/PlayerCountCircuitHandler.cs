@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using ArenaBrawl.Data;
 using ArenaBrawl.InMemoryData;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Channel;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 
 namespace ArenaBrawl.Services
@@ -19,7 +21,6 @@ namespace ArenaBrawl.Services
         public override Task OnConnectionDownAsync(Circuit circuit, CancellationToken cancellationToken)
         {
             if (!_playerOnline) return base.OnConnectionDownAsync(circuit, cancellationToken);
-            
             _repository.PlayerDisconnected();
             _playerOnline = false;
             return base.OnConnectionDownAsync(circuit, cancellationToken);
