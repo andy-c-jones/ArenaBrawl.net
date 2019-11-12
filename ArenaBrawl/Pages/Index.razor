@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using ArenaBrawl.Components
 @using ArenaBrawl.Components.MatchMaking
+
 <ArenaBrawlLogo></ArenaBrawlLogo>
 
 <div class="container w-100">
@@ -19,30 +20,7 @@
         </div>
         <div class="col-4 content-box">
             <div>
-
-                @if (_formatSelected == false)
-                {
-                    <div class="text-center">
-                        <p>Please select the format you would like to play:</p>
-                        <select class="input-txt" name="Format" @onchange="FormatSelection">
-                            <option value="Standard">Standard</option>
-                            <option value="Historic">Historic</option>
-                        </select>
-
-                        <button class="btn btn-primary" @onclick="FormatSelectToggled">Start playing @_selectedFormat</button>
-                    </div>
-                }
-                else
-                {
-                    @if (_selectedFormat == "Standard")
-                    {
-                        <Matchmaker></Matchmaker>
-                    }
-                    else
-                    {
-                        <HistoricMatchmaker></HistoricMatchmaker>
-                    }
-                }
+                <Matchmaker></Matchmaker>
             </div>
         </div>
         <div class="col-4">
@@ -54,22 +32,5 @@
 <p style="font-size: 12px; text-align: right; margin-top: 30px"><a href="/donate">Donations</a> to keep the servers running are welcome.</p>
 <p style="font-size: 12px; text-align: right;">Please send any questions or feedback to <a href="mailto:feedback@arenabrawl.net" target="_top">feedback@arenabrawl.net</a>. </p>
 
-
-
 @code {
-
-    private void FormatSelectToggled()
-    {
-        _formatSelected = !_formatSelected;
-    }
-
-    private void FormatSelection(ChangeEventArgs e)
-    {
-        var format = e.Value.ToString();
-        _selectedFormat = format;
-        InvokeAsync(StateHasChanged);
-    }
-
-    private string _selectedFormat = "Standard";
-    private bool _formatSelected = false;
 }

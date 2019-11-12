@@ -7,21 +7,23 @@ using System.Threading.Tasks;
 
 namespace ArenaBrawl.InMemoryData.Matchmaking
 {
-    public class MatchmatchingQueue
+    public class MatchmakingQueueBase
     {
-        private readonly ConcurrentDictionary<Guid, PlayerWaitingForGame> _queue = new ConcurrentDictionary<Guid, PlayerWaitingForGame>();
-        private readonly ConcurrentDictionary<Guid, PotentialMatch> _matches = new ConcurrentDictionary<Guid, PotentialMatch>();
+         private readonly ConcurrentDictionary<Guid, PlayerWaitingForGame> _queue;
+         private readonly ConcurrentDictionary<Guid, PotentialMatch> _matches;
 
         private CancellationTokenSource _pollingCancellationToken;
 
-        public MatchmatchingQueue()
+        public MatchmakingQueueBase(ConcurrentDictionary<Guid, PlayerWaitingForGame> queue, ConcurrentDictionary<Guid, PotentialMatch> matches)
         {
+            _queue = queue;
+            _matches = matches;
             AttemptToMatchPlayers();
         }
 
         public async Task<bool> Add(PlayerWaitingForGame playerWaitingForGame)
         {
-            _queue.AddOrUpdate(playerWaitingForGame.Id, (id) => playerWaitingForGame, (id, v) => playerWaitingForGame);
+            _queue.AddOrUpdate(playerWaitingForGame.Id, id => playerWaitingForGame, (id, v) => playerWaitingForGame);
             return true;
         }
 
@@ -88,7 +90,7 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
         public event Action<PotentialMatch> MatchAcceptedByBothPlayers;
         public event Action<PotentialMatch> MatchAbandoned;
 
-        ~MatchmatchingQueue()
+        ~MatchmakingQueueBase()
         {
             _pollingCancellationToken.Cancel();
         }
