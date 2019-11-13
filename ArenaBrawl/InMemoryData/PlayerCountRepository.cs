@@ -28,7 +28,7 @@ namespace ArenaBrawl.InMemoryData
             UpdateMetrics();
         }
 
-        public void UpdateMetrics()
+        private void UpdateMetrics()
         {
             _telemetry.TrackMetric("OnlinePlayerCount",_currentOnlinePlayers);
             NotifyStateChanged();

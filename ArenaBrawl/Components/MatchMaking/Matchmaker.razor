@@ -5,6 +5,7 @@
 @inject IJSRuntime JSRuntime
 @inject HistoricBrawlQueue HistoricBrawl
 @inject StandardBrawlQueue StandardBrawl
+@inject PlayerInGameCountRepository InGameCountRepository
 
 <style type="text/css">
 
@@ -62,8 +63,10 @@
 
              @if (_showInvalidNameWarning)
              {
-                 <p style="color: red">Invalid player name, should be in the format PlayerName#12345</p>
+                 <p style="color: red">Your player name, should be in the format PlayerName#12345. Try clicking on your player name in the Direct Challenge menu to copy it.</p>
              }
+
+
             <br />
         </div>
         break;
@@ -118,7 +121,7 @@
             <h3 class="text-center" id="opponentName" data-tooltip title="Click to copy to clipboard" style="cursor: pointer" @onclick="CopyToClipboard"> @_opponent.InGameName</h3>
 
             <div>
-                <button class="btn btn-primary" @onclick="Cancel">Finished</button>
+                <button class="btn btn-primary" @onclick="FinishGame">Finished</button>
             </div>
 
             <p>To challenge your opponent to a brawl follow these steps in the client:</p>
@@ -163,12 +166,6 @@
     private BrawlFormat _brawlFormat;
     private MatchmakingQueueBase Queue => _brawlFormat == BrawlFormat.Standard ? (MatchmakingQueueBase) StandardBrawl : HistoricBrawl;
 
-    enum BrawlFormat
-    {
-        Standard,
-        Historic
-    }
-
     private void FormatSelection(ChangeEventArgs e)
     {
         var format = e.Value.ToString();
@@ -211,6 +208,7 @@
         InvokeAsync(StateHasChanged);
         Queue.MatchAcceptedByBothPlayers -= MatchAcceptedByBothPlayers;
         Queue.MatchAbandoned -= MatchAbandoned;
+        InGameCountRepository.PlayerJoinedGame(Session.Id, _brawlFormat);
     }
 
     private async void AcceptMatch()
@@ -226,6 +224,12 @@
         _match = null;
         Queue.LeaveQueue(Session.Id);
         InvokeAsync(StateHasChanged);
+    }
+
+    private async void FinishGame()
+    {
+        InGameCountRepository.PlayerLeftGame(Session.Id, _brawlFormat);
+        Cancel();
     }
 
     private void CopyToClipboard() => JSRuntime.InvokeAsync<string>("copyToClipboard", new object[0]);

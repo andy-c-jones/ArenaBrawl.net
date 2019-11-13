@@ -5,7 +5,6 @@ using ArenaBrawl.InMemoryData.Matchmaking;
 using ArenaBrawl.Payments;
 using ArenaBrawl.Services;
 using Microsoft.ApplicationInsights.Extensibility.EventCounterCollector;
-using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
@@ -45,6 +44,7 @@ namespace ArenaBrawl
             services.AddSingleton<StandardBrawlQueue>();
             services.AddSingleton<HistoricBrawlQueue>();
             services.AddSingleton<PlayerCountRepository>();
+            services.AddSingleton<PlayerInGameCountRepository>();
             services.AddSingleton<PaymentService>();
             services.AddScoped<PlayerSession>();
             services.AddScoped<CircuitHandler, PlayerCountCircuitHandler>();
