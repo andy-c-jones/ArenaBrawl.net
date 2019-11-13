@@ -59,7 +59,7 @@
         </span>
     </p>
 
-    <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+    <button class="btn btn-primary" @onclick="() => QueueForMatch(false)">Find a game</button>
 
     @if (_showInvalidNameWarning)
     {
@@ -140,7 +140,7 @@
         break;
     case GameState.Rejected:
 <p>The other player has rejected the match up</p>
-<button class="btn btn-primary" @onclick="QueueForMatch">Requeue</button>
+<button class="btn btn-primary" @onclick="() => QueueForMatch(true)">Requeue</button>
 <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
         break;
 }
@@ -173,7 +173,7 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private async void QueueForMatch()
+    private async void QueueForMatch(bool requeue)
     {
         if (NameIsValid())
         {
@@ -184,7 +184,10 @@
             _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
             await Queue.Add(_playerWaitingForGame);
             _state = GameState.FindingPlayer;
-            InGameCountRepository.PlayerJoinedGame(Session.Id, _brawlFormat);
+            if (!requeue)
+            {
+                InGameCountRepository.PlayerJoinedGame(Session.Id, _brawlFormat);
+            }
         }
         else
         {
@@ -234,16 +237,16 @@
 
     private void QueueOnMatchFound(PotentialMatch match)
     {
-    var players = match.PlayersWaitingForGames;
-    if (!players.Contains(_playerWaitingForGame)) return;
-    _match = match;
-    _opponent = players.First(p => p.Id != Session.Id);
-    _state = GameState.PlayerFound;
-    JSRuntime.InvokeAsync<string>
-        ("playMatchfound", new object[0]);
+        var players = match.PlayersWaitingForGames;
+        if (!players.Contains(_playerWaitingForGame)) return;
+        _match = match;
+        _opponent = players.First(p => p.Id != Session.Id);
+        _state = GameState.PlayerFound;
+        JSRuntime.InvokeAsync<string>
+            ("playMatchfound", new object[0]);
         Queue.MatchFound -= QueueOnMatchFound;
         InvokeAsync(StateHasChanged);
-        }
+    }
 
-        private bool BrawlFormatSelected(BrawlFormat brawlFormat) => _brawlFormat == brawlFormat;
+    private bool BrawlFormatSelected(BrawlFormat brawlFormat) => _brawlFormat == brawlFormat;
         }
