@@ -37,11 +37,11 @@
     </p>
     <p>
         <div class=@(_standardCount == 0 ? "playercount-led-yellow" : "playercount-led-green")></div>
-        <div class="playercount-text">@_standardCount @(PlayersText(_standardCount)) in-game playing @BrawlFormat.Standard.ToString()</div>
+        <div class="playercount-text">@_standardCount @(PlayersText(_standardCount)) playing @BrawlFormat.Standard.ToString()</div>
     </p>
     <p>
         <div class=@(_historicCount == 0 ? "playercount-led-yellow" : "playercount-led-green")></div>
-        <div class="playercount-text">@_historicCount @(PlayersText(_historicCount)) in-game playing @BrawlFormat.Historic.ToString()</div>
+        <div class="playercount-text">@_historicCount @(PlayersText(_historicCount)) playing @BrawlFormat.Historic.ToString()</div>
     </p>
 </div>
 

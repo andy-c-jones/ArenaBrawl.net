@@ -41,107 +41,107 @@
 @switch (_state)
 {
     case GameState.OutsideOfGame:
-        <div class="text-center">
-            <p>Queue for a brawl!</p>
-            <p>
-                <span>
-                    Format:
-                    <select class="input-txt" name="Format" @onchange="FormatSelection">
-                     <option selected=@BrawlFormatSelected(BrawlFormat.Standard) value="Standard">Standard</option>
-                     <option selected=@BrawlFormatSelected(BrawlFormat.Historic) value="Historic">Historic</option>
-                 </select>
-                 </span>
-            </p>
-            <p>
-                <span>
-                    Player Name:
-                    <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
-                </span>
-            </p>
-            
-            <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+<div class="text-center">
+    <p>Queue for a brawl!</p>
+    <p>
+        <span>
+            Format:
+            <select class="input-txt" name="Format" @onchange="FormatSelection">
+                <option selected=@BrawlFormatSelected(BrawlFormat.Standard) value="Standard">Standard</option>
+                <option selected=@BrawlFormatSelected(BrawlFormat.Historic) value="Historic">Historic</option>
+            </select>
+        </span>
+    </p>
+    <p>
+        <span>
+            Player Name:
+            <input class="input-txt" type="text" placeholder="PlayerName#12345" @bind="_name" />
+        </span>
+    </p>
 
-             @if (_showInvalidNameWarning)
-             {
-                 <p style="color: red">Your player name, should be in the format PlayerName#12345. Try clicking on your player name in the Direct Challenge menu to copy it.</p>
-             }
+    <button class="btn btn-primary" @onclick="QueueForMatch">Find a game</button>
+
+    @if (_showInvalidNameWarning)
+    {
+    <p style="color: red">Your player name, should be in the format PlayerName#12345. Try clicking on your player name in the Direct Challenge menu to copy it.</p>
+    }
 
 
-            <br />
-        </div>
+    <br />
+</div>
         break;
     case GameState.FindingPlayer:
-        <div class="text-center">
-            <div class="lds-dual-ring"></div>
-            <p>Finding player please wait...</p>
-            <p><span id="findingGameElapsedTime"></span></p>
-            <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+<div class="text-center">
+    <div class="lds-dual-ring"></div>
+    <p>Finding player please wait...</p>
+    <p><span id="findingGameElapsedTime"></span></p>
+    <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
 
-            <script suppress-error="BL9992">
-                var element = document.getElementById('findingGameElapsedTime'),
-                    seconds = 0, minutes = 0,
-                    t;
+    <script suppress-error="BL9992">
+        var element = document.getElementById('findingGameElapsedTime'),
+            seconds = 0, minutes = 0,
+            t;
 
-                function tick() {
-                    seconds++;
-                    if (seconds >= 60) {
-                        seconds = 0;
-                        minutes++;
-                    }
-    
-                    element.textContent = (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+        function tick() {
+            seconds++;
+            if (seconds >= 60) {
+                seconds = 0;
+                minutes++;
+            }
 
-                    timer();
-                }
-                function timer() {
-                    t = setTimeout(tick, 1000);
-                }
-                tick();
-            </script>
-        </div>
+            element.textContent = (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+
+            timer();
+        }
+        function timer() {
+            t = setTimeout(tick, 1000);
+        }
+        tick();
+    </script>
+</div>
         break;
     case GameState.PlayerFound:
-        <div class="text-center">
-            <p>Player found!</p>
-            <countdown></countdown>
-            <button class="btn btn-primary" @onclick="AcceptMatch">Accept</button>
-            <button class="btn btn-primary" @onclick="Cancel">Reject</button>
-        </div>
+<div class="text-center">
+    <p>Player found!</p>
+    <countdown></countdown>
+    <button class="btn btn-primary" @onclick="AcceptMatch">Accept</button>
+    <button class="btn btn-primary" @onclick="Cancel">Reject</button>
+</div>
         break;
     case GameState.Accepted:
-        <div class="text-center">
-            <div class="lds-dual-ring"></div>
-            <p>Waiting for the other player...</p>
-            <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
-        </div>
+<div class="text-center">
+    <div class="lds-dual-ring"></div>
+    <p>Waiting for the other player...</p>
+    <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+</div>
         break;
     case GameState.BothAccepted:
-        <div class="text-center">
-            <p>You have been matched with:</p>
-            <h3 class="text-center" id="opponentName" data-tooltip title="Click to copy to clipboard" style="cursor: pointer" @onclick="CopyToClipboard"> @_opponent.InGameName</h3>
+<div class="text-center">
+    <p>You have been matched with:</p>
+    <h3 class="text-center" id="opponentName" data-tooltip title="Click to copy to clipboard" style="cursor: pointer" @onclick="CopyToClipboard"> @_opponent.InGameName</h3>
 
-            <div>
-                <button class="btn btn-primary" @onclick="FinishGame">Finished</button>
-            </div>
+    <div>
+        <button class="btn btn-primary" @onclick="Cancel">Finished</button>
+    </div>
 
-            <p>To challenge your opponent to a brawl follow these steps in the client:</p>
-            <ol>
-                <li>Click on the crossed swords icon in the top right corner of the Arena client</li>
-                <li>Select Challenge Match</li>
-                <li>Click the drop-down icon arrow</li>
-                <li>Select Deck Type: Brawl</li>
-                <li>Select Coin Flip</li>
-                <li>Enter your opponent's player Id in the box below</li>
-                <li>Select your Brawl deck</li>
-                <li>Click Play</li>
-                <li>Wait for your opponent. The game will start when both match players hit play</li>
-            </ol>
-        </div>
+    <p>To challenge your opponent to a brawl follow these steps in the client:</p>
+    <ol>
+        <li>Click on the crossed swords icon in the top right corner of the Arena client</li>
+        <li>Select Challenge Match</li>
+        <li>Click the drop-down icon arrow</li>
+        <li>Select Deck Type: Brawl</li>
+        <li>Select Coin Flip</li>
+        <li>Enter your opponent's player Id in the box below</li>
+        <li>Select your Brawl deck</li>
+        <li>Click Play</li>
+        <li>Wait for your opponent. The game will start when both match players hit play</li>
+    </ol>
+</div>
         break;
     case GameState.Rejected:
-        <p>The other player has rejected the match up</p>
-        <button class="btn btn-primary" @onclick="QueueForMatch">Requeue</button>
-        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+<p>The other player has rejected the match up</p>
+<button class="btn btn-primary" @onclick="QueueForMatch">Requeue</button>
+<button class="btn btn-primary" @onclick="Cancel">Cancel</button>
         break;
 }
 
@@ -184,6 +184,7 @@
             _playerWaitingForGame = new PlayerWaitingForGame(Session.Id, _name);
             await Queue.Add(_playerWaitingForGame);
             _state = GameState.FindingPlayer;
+            InGameCountRepository.PlayerJoinedGame(Session.Id, _brawlFormat);
         }
         else
         {
@@ -208,7 +209,6 @@
         InvokeAsync(StateHasChanged);
         Queue.MatchAcceptedByBothPlayers -= MatchAcceptedByBothPlayers;
         Queue.MatchAbandoned -= MatchAbandoned;
-        InGameCountRepository.PlayerJoinedGame(Session.Id, _brawlFormat);
     }
 
     private async void AcceptMatch()
@@ -223,30 +223,27 @@
         _state = GameState.OutsideOfGame;
         _match = null;
         Queue.LeaveQueue(Session.Id);
+        InGameCountRepository.PlayerLeftGame(Session.Id, _brawlFormat);
         InvokeAsync(StateHasChanged);
     }
 
-    private async void FinishGame()
-    {
-        InGameCountRepository.PlayerLeftGame(Session.Id, _brawlFormat);
-        Cancel();
-    }
-
-    private void CopyToClipboard() => JSRuntime.InvokeAsync<string>("copyToClipboard", new object[0]);
+    private void CopyToClipboard() => JSRuntime.InvokeAsync<string>
+    ("copyToClipboard", new object[0]);
 
     private bool NameIsValid() => nameValidationRegex.IsMatch(_name);
 
     private void QueueOnMatchFound(PotentialMatch match)
     {
-        var players = match.PlayersWaitingForGames;
-        if (!players.Contains(_playerWaitingForGame)) return;
-        _match = match;
-        _opponent = players.First(p => p.Id != Session.Id);
-        _state = GameState.PlayerFound;
-        JSRuntime.InvokeAsync<string>("playMatchfound", new object[0]);
+    var players = match.PlayersWaitingForGames;
+    if (!players.Contains(_playerWaitingForGame)) return;
+    _match = match;
+    _opponent = players.First(p => p.Id != Session.Id);
+    _state = GameState.PlayerFound;
+    JSRuntime.InvokeAsync<string>
+        ("playMatchfound", new object[0]);
         Queue.MatchFound -= QueueOnMatchFound;
         InvokeAsync(StateHasChanged);
-    }
+        }
 
-    private bool BrawlFormatSelected(BrawlFormat brawlFormat) => _brawlFormat == brawlFormat;
-}
+        private bool BrawlFormatSelected(BrawlFormat brawlFormat) => _brawlFormat == brawlFormat;
+        }
