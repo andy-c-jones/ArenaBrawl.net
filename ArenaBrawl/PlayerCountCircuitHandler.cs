@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using ArenaBrawl.InMemoryData;
 using ArenaBrawl.InMemoryData.Matchmaking;
@@ -18,6 +19,12 @@ namespace ArenaBrawl.Services
             _repository = repository;
             _playerInGameCountRepository = playerInGameCountRepository;
             _session = session;
+        }
+
+        public override Task OnCircuitClosedAsync(Circuit circuit, CancellationToken cancellationToken)
+        {
+            _playerInGameCountRepository.PlayerDisconnected(_session.Id);
+            return base.OnCircuitClosedAsync(circuit, cancellationToken);
         }
 
         public override Task OnConnectionDownAsync(Circuit circuit, CancellationToken cancellationToken)
