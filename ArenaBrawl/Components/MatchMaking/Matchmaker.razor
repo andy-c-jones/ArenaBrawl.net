@@ -94,6 +94,7 @@
             timer();
         }
         function timer() {
+            clearTimeout(t);
             t = setTimeout(tick, 1000);
         }
         tick();
