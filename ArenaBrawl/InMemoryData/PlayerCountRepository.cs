@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 
 namespace ArenaBrawl.InMemoryData
@@ -7,6 +10,7 @@ namespace ArenaBrawl.InMemoryData
     {
         private readonly TelemetryClient _telemetry;
         private int _currentOnlinePlayers;
+        private CancellationTokenSource _pollingCancellationToken;
 
         public event Action<int> CountUpdated;
         private void NotifyStateChanged() => CountUpdated?.Invoke(_currentOnlinePlayers);
@@ -14,24 +18,28 @@ namespace ArenaBrawl.InMemoryData
         public PlayerCountRepository(TelemetryClient telemetry)
         {
             _telemetry = telemetry;
+            UpdateStats();
+        }
+        
+        private async void UpdateStats()
+        {
+            _pollingCancellationToken = new CancellationTokenSource();
+            while (!_pollingCancellationToken.IsCancellationRequested)
+            {
+                _telemetry.TrackMetric("OnlinePlayerCount",_currentOnlinePlayers);
+                NotifyStateChanged();
+                await Task.Delay(10000);
+            }
         }
 
         public void PlayerConnected()
         {
             _currentOnlinePlayers++;
-            UpdateMetrics();
         }
 
         public void PlayerDisconnected()
         {
             _currentOnlinePlayers--;
-            UpdateMetrics();
-        }
-
-        private void UpdateMetrics()
-        {
-            _telemetry.TrackMetric("OnlinePlayerCount",_currentOnlinePlayers);
-            NotifyStateChanged();
         }
 
         public int CurrentPlayers() => _currentOnlinePlayers;

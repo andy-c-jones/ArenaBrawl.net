@@ -34,7 +34,7 @@ namespace ArenaBrawl.InMemoryData.Matchmaking
                 }
 
                 UpdatedCounts?.Invoke(update);
-                await Task.Delay(1000);
+                await Task.Delay(10000);
             }
         }
 
