@@ -3,13 +3,12 @@
 A site for matchmatching players into Magic the Gathering: Arena "Brawl" game mode
 
 
+This site was up and running from 10th November through to 1st July when Wizards added the mode into the game client.
 
-## Future
+See Reddit posts for more info:
+- Launch https://www.reddit.com/r/MagicArena/comments/dugzo2/arenabrawlnet_play_brawl_when_you_want/
+- Boom in activity https://www.reddit.com/r/MagicArena/comments/e9dvsf/thanks_for_clashing_arenabrawlnet_joking_not/
+- Closing down announcement https://www.reddit.com/r/MagicArena/comments/hf9ac3/we_won_brawl_is_now_free_arenabrawlnet_will_soon/
 
-If it kicks of then we can start supporting 
 
-1) other game modes
-1) tournaments (brackets, proof of win upload, organiser interface)
-1) match history / deck tracking (import decks, show history of games)
-1) other similar card games
-1) a wider range of games
+
