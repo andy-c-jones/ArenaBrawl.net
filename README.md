@@ -25,6 +25,9 @@ dotnet run
 ```
 and you are good to go
 
+### A quick note on secrets
+We used Stripe to collect donations, you will see how easy that was in the code! None of the keys in this repo were ever the production secret and I rotated the test secret before publishing publicly ;)
+
 # Licence etc...
 Feel free to run your own production version if you want but...
 
