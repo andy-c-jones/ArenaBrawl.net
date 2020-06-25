@@ -13,3 +13,22 @@ See Reddit posts for more info:
 
 # Technical Information
 The site was built in a rush to meet the demands of the commuinity as fast as possible. I picked server side Blazor since it was a new technology that allowed me to get realtime behaviour up and running very fast. This is probably where the benefits of the Blazor ended. The main issue we had with it (and of course in some part due to the rushed implementation) was that the bandwidth and CPU requirement of the server was very high for the load we had. In hindsight I would have picked a standard MVC framework to build this site.
+
+I am leaving the repo "as is" but its worth mentioning there is some database integration code and deployment stuff int he pipline yml which was actually never used because we took the decision not to create the concept of user accounts to keep the site simple and cheap to operate.
+
+If you do want to build it then you will need dotnet core 3.0+
+then
+```
+cd ArenaBrawl
+dotnet build
+dotnet run
+```
+and you are good to go
+
+# Licence etc...
+Feel free to run your own production version if you want but...
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Standard MIT licence can be found along side this readme
+
