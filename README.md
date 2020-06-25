@@ -28,6 +28,17 @@ and you are good to go
 ### A quick note on secrets
 We used Stripe to collect donations, you will see how easy that was in the code! None of the keys in this repo were ever the production secret and I rotated the test secret before publishing publicly ;)
 
+### Server Side Blazor
+
+I think server side blazor is objectively bad. The user wokwokwok on Hacker news sums up my feelings on Server Side Blazor nicely here: https://news.ycombinator.com/item?id=18137920
+
+To quote two of his points that really stood out to me while I was running the site:
+
+> Every UI interaction, from mouse focus, to mouse drag, to click to button down, is sent down the wire to the server to be processed. For high latency situations, this will feel terrible.
+
+> Every client shares the same server cluster. As such, it scales badly; your application may perform well with 10 users, but for 100 users, you have 10x as much server work happening. Not business logic... UI logic. Will it scale? No one knows, but the money is on 'no'. The server scale-out demands will scale with people viewing the website; effectively this means the UI will lag out under load when the server is busy, the exact opposite of modern SPA applications and apps that remain superficially responsive under server load, and compounding issues generated from (1).
+
+
 # Licence etc...
 Feel free to run your own production version if you want but...
 
